@@ -17,13 +17,14 @@ public class PanelController : MonoBehaviour
     protected int state;
     protected int interState;
     protected int totalLoops;
-    protected int time;
-    protected int timeDelay = 5; //wait in seconds for pausing
-    protected int timeLeft; //count to this time
+    protected float time;
+    protected float timeDelay = 3.0f; //wait in seconds for pausing
     protected string stringTime;
     protected SerialPort triggerBox;
     protected Byte[] data = { (Byte)0 };
     protected bool serialSent;
+    protected float rate = 90.0f;
+    protected float currentFrameTime;
     
 
 
@@ -39,10 +40,10 @@ public class PanelController : MonoBehaviour
         totalLoops = 9;
         colors[0] = white;
         colors[1] = black;
-        stringTime = DateTime.Now.ToString("mmss");
-        time = Int16.Parse(stringTime);
-        timeLeft = time + timeDelay;
         serialSent = false;
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 9999;
+        currentFrameTime = Time.realtimeSinceStartup;
 
         openTriggerBoxPort();
         
@@ -53,27 +54,27 @@ public class PanelController : MonoBehaviour
     void Update()
     {
 
-        
-        stringTime = DateTime.Now.ToString("mmss");
-        time = Int16.Parse(stringTime);
-
         StartCoroutine(colorSwitch());
 
 
     }
 
-    
+
+
 
     void OnDestroy()
     {
         closeTriggerBoxPort();
     }
 
+
     IEnumerator colorSwitch()
     {
+
         if( state == 1)
         {
-            if(serialSent == false)
+
+            if (serialSent == false)
             {
                 writeWithThread();
                 serialSent = true;
@@ -89,32 +90,31 @@ public class PanelController : MonoBehaviour
                 {
                     render.material.color = colors[0]; // white
                 }
-                
+
                 yield return null;
+                
 
             }
 
             state = 2;
+            time = Time.realtimeSinceStartup;
 
         }
 
         if(state == 2)
         {
             render.material.color = colors[1]; // black
-            //Time.timeScale = 0;
+            float theTime = Time.realtimeSinceStartup;
 
             //Debug.Log("The game is paused. Please wait............");
 
-            if (time >= timeLeft - 1)
+            if (theTime >= time + timeDelay)
             {
                 //Debug.Log("### THE GAME IS BACK ###");
 
                 //Rsume the game and restart timer again
                 state = 1;
                 serialSent = false;
-                stringTime = DateTime.Now.ToString("mmss");
-                timeLeft = (Int16.Parse(stringTime) + timeDelay);
-                //Time.timeScale = 0;
 
             }
 
@@ -124,6 +124,22 @@ public class PanelController : MonoBehaviour
 
         
 
+    }
+
+    void slowDown()
+    {
+        currentFrameTime += 1.0f / rate;
+        var t = Time.realtimeSinceStartup;
+        var sleepTime = currentFrameTime - t - 0.01f;
+        if (sleepTime > 0)
+        {
+            Thread.Sleep((int)(sleepTime * 1000));
+        }   
+        while (t < currentFrameTime)
+        {
+            t = Time.realtimeSinceStartup;
+        }
+            
     }
 
     void openTriggerBoxPort()
