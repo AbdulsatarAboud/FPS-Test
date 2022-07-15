@@ -37,12 +37,13 @@ public class PanelController : MonoBehaviour
         render = gameObject.GetComponent<Renderer>();
         state = 1;
         interState = 1;
-        totalLoops = 9;
+        totalLoops = 120;
         colors[0] = white;
         colors[1] = black;
         serialSent = false;
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 9999;
+        //Application.targetFrameRate = 100;
         currentFrameTime = Time.realtimeSinceStartup;
 
         openTriggerBoxPort();
@@ -84,11 +85,13 @@ public class PanelController : MonoBehaviour
             {
                 if((interState % 2) == 0)
                 {
-                    render.material.color = colors[1]; // black
+                    //render.material.color = colors[1]; // black
+                    render.enabled = true;
                 }
                 else
                 {
-                    render.material.color = colors[0]; // white
+                    //render.material.color = colors[0]; // white
+                    render.enabled = true;
                 }
 
                 yield return null;
@@ -103,7 +106,8 @@ public class PanelController : MonoBehaviour
 
         if(state == 2)
         {
-            render.material.color = colors[1]; // black
+            //render.material.color = colors[1]; // black
+            render.enabled = false;
             float theTime = Time.realtimeSinceStartup;
 
             //Debug.Log("The game is paused. Please wait............");
