@@ -36,13 +36,15 @@ public class PanelController : MonoBehaviour
         render = gameObject.GetComponent<Renderer>();
         state = 1;
         interState = 1;
-        totalLoops = 9;
+        totalLoops = 40;
         colors[0] = white;
         colors[1] = black;
         stringTime = DateTime.Now.ToString("mmss");
         time = Int16.Parse(stringTime);
         timeLeft = time + timeDelay;
         serialSent = false;
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 100;
 
         openTriggerBoxPort();
         
@@ -83,7 +85,7 @@ public class PanelController : MonoBehaviour
             {
                 if((interState % 2) == 0)
                 {
-                    render.material.color = colors[1]; // black
+                    render.material.color = colors[0]; // black
                 }
                 else
                 {
