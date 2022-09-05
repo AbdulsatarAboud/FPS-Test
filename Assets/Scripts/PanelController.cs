@@ -37,7 +37,7 @@ public class PanelController : MonoBehaviour
         render = gameObject.GetComponent<Renderer>();
         state = 1;
         interState = 1;
-        totalLoops = 48;
+        totalLoops = 2;
         colors[0] = white;
         colors[1] = black;
         serialSent = false;
